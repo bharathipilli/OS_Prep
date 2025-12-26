@@ -1,304 +1,411 @@
-#### 🧠 Classic OS Theory (Textbook View)
-
-In theory, an operating system describes **five main process states**:
-
-| State | Meaning |
-|--------|----------|
-| **New** | Process being created |
-| **Ready** | Process waiting to be scheduled on CPU |
-| **Running** | Currently executing on CPU |
-| **Waiting / Blocked** | Waiting for I/O or an event |
-| **Terminated** | Finished execution |
-
-But Linux doesn’t show *exactly* these labels — instead, it merges or renames them.
+# Operating Systems – Complete Recap (Interview & Linux System Programming)
 
 ---
 
-### 🐧 Linux’s Actual Process States
+## 1. What is an Operating System?
 
-| Code | Name | Description |
-|------|------|--------------|
-| **R** | Running | Either *currently running* or *ready to run* (in the run queue). |
-| **S** | Sleeping | Interruptible sleep — waiting for an event (like I/O). |
-| **D** | Disk Sleep | Uninterruptible sleep (can’t be woken by signals, e.g., waiting for disk I/O). |
-| **T** | Stopped | Process paused by a signal (`SIGSTOP` or debugging). |
-| **Z** | Zombie | Process finished but parent hasn’t called `wait()` yet. |
-| **X** | Dead | Completely terminated (rarely visible). |
+**Q1. What is an Operating System?**  
+An Operating System (OS) is system software that:
+- Acts as an interface between user applications and hardware
+- Manages CPU, memory, storage, I/O devices, and processes
+- Provides services so programs execute safely and efficiently
 
 ---
 
+## 2. Why Do We Need an Operating System?
+
+**Q2. Why is an OS required?**
+
+Without an OS:
+- Programs directly access hardware → conflicts
+- No multitasking
+- No memory protection
+- No file organization
+- No security
+
+OS solves this by:
+- Schedules CPU time among processes
+- Isolates running programs
+- Manages memory allocation and protection
+- Provides file systems for data storage
+- Handles I/O devices
+- Enforces security and access control
+
+**In simple terms:**  
+> OS = Resource Manager + Control Program   
+
+### Conclusion
+
+The Operating System acts as a **resource manager** and **control program**, ensuring stability, security, and efficient utilization of system resources.
 ---
 
-## 4️⃣ What is the difference between fork() and exec()?
+## 3. Importance of Operating System
 
-| Aspect | fork() | exec() |
-|:--|:--|:--|
-| Purpose | Creates new process (child) | Replaces current process |
-| Memory | Child gets copy of parent memory | Old memory replaced |
-| PID | New PID assigned | Same PID retained |
-| Return | Returns twice (0 to child, PID to parent) | Returns only on failure |
-
----
-
-## 5️⃣ What does wait() do?
-`wait()` allows a parent process to:
-- Wait for a child to finish execution  
-- Collect the child’s exit status  
-- Prevent zombie processes  
-
-It **blocks** the parent until a child terminates.
-
----
-
-## 6️⃣ What is vfork()?
-`vfork()` creates a child process sharing the parent’s memory temporarily until the child calls `exec()` or `_exit()`.  
-⚠️ It’s faster but risky — child must not modify parent’s memory before exec.
-
----
-
-## 7️⃣ What is a zombie process?
-A process that has finished execution but still has an entry in the process table because its parent hasn’t read its exit status via `wait()`.
-
----
-
-## 8️⃣ What is an orphan process?
-A process whose parent has terminated before it.  
-It gets adopted by **init/systemd (PID 1)**.
-
----
-
-## 9️⃣ Difference between a process and a thread
-
-| Feature | Process | Thread |
-|:--|:--|:--|
-| Memory | Independent memory space | Shared memory space |
-| PID | Unique PID | Same PID (different TID) |
-| Overhead | Heavy | Lightweight |
-| Communication | IPC needed | Shared variables |
+| Area | Importance |
+|---|---|
+| CPU | Efficient multitasking |
+| Memory | Prevents crashes and overwrites |
+| Storage | Organized file systems |
+| Security | Access control and permissions |
+| Performance | Optimal resource usage |
+| Stability | Fault isolation |
 
 ---
 
-## 🔟 What is the use of getpid() and getppid()?
-- `getpid()` → returns current process ID  
-- `getppid()` → returns parent process ID  
+## 4. Types of Operating Systems
+
+### Batch Operating System
+
+**Q1. What is a Batch OS?**
+- Jobs executed in batches
+- No user interaction
+
+**Example:** Early mainframe systems
 
 ---
 
-## 11️⃣ What is the purpose of the clone() system call?
-`clone()` is a low-level syscall used to create processes or threads with fine-grained control over what is shared (memory, file descriptors, signal handlers, etc.).  
-🧩 Used internally by `pthread_create()`.
+### Time-Sharing Operating System
+
+**Q1. What is a Time-Sharing OS?**
+- CPU shared among multiple users
+- Fast response time
+
+**Example:** UNIX, Linux
 
 ---
 
-## 12️⃣ What is exit() vs _exit() difference?
-- `exit()` → graceful termination (flushes I/O, runs atexit handlers)  
-- `_exit()` → immediate termination (used by child after fork())
+### Real-Time Operating System (RTOS)
+
+**Q1. What is RTOS?**
+- Strict timing constraints
+- Deterministic response
+
+**Example:** VxWorks, FreeRTOS
 
 ---
 
-## 13️⃣ What is a daemon process?
-A **background process** detached from any terminal, usually started at boot (e.g., `sshd`, `cron`).  
-Runs continuously to provide system services.
+### Distributed Operating System
+
+**Q1. What is a Distributed OS?**
+- Multiple machines behave as a single system
 
 ---
 
-## 14️⃣ What are process groups and sessions?
-- **Process group**: collection of processes that can receive signals together (e.g., Ctrl+C).  
-- **Session**: group of process groups with one controlling terminal (used for job control).
+### Network Operating System
+
+**Q1. What is a Network OS?**
+- Provides networking services
+
+**Example:** Windows Server
 
 ---
 
-## 15️⃣ What is nice() and renice()?
-These adjust **process scheduling priority**.
+## 5. Process Management – Interview Questions and Answers
 
-Range: `-20` (highest) to `+19` (lowest)  
-- `nice()` sets priority at start.  
-- `renice()` modifies running processes.
+### Process Basics
 
----
+**Q1. What is a Process?**  
+A process is a program in execution.
 
-## 16️⃣ What are the three scheduling classes in Linux?
-- **SCHED_OTHER** – normal timesharing  
-- **SCHED_FIFO** – real-time, first-in-first-out  
-- **SCHED_RR** – real-time, round-robin  
+**Q2. Program vs Process?**
+- Program: Passive (stored on disk)
+- Process: Active (running in memory)
 
 ---
 
-## 17️⃣ What is context switching?
-The process of saving the CPU state of one process and loading another’s state so the CPU can switch between them.
+### Process States
+
+**Q3. Process states?**
+- New
+- Ready
+- Running
+- Waiting
+- Terminated
 
 ---
 
-## 18️⃣ What is the role of the scheduler?
-The **scheduler** decides which process gets the CPU next based on priority, fairness, and policy.
+### Process Control Block (PCB)
+
+**Q4. What is PCB?**
+Stores:
+- Process ID
+- State
+- Program counter
+- Registers
+- Memory info
 
 ---
 
-## 19️⃣ What are the main types of schedulers?
-- **Long-term scheduler**: admits new jobs (rare in Linux)  
-- **Short-term scheduler**: selects which ready process runs next  
-- **Medium-term scheduler**: handles swapping in/out processes  
+### Context Switching
+
+**Q5. What is Context Switching?**  
+Saving one process state and loading another.
+
+**Linux APIs:** `fork()`, `exec()`, `wait()`, `exit()`
 
 ---
 
-## 20️⃣ What is the difference between user and kernel threads?
-- **User threads**: managed in user space (fast but not preemptive)  
-- **Kernel threads**: managed by kernel (fully preemptive, visible to OS)
+## 6. Threads – Interview Questions and Answers
+
+### Thread Basics
+
+**Q1. What is a Thread?**  
+Smallest unit of execution inside a process.
+
+**Q2. Thread vs Process?**
+- Threads share memory
+- Processes have separate memory
 
 ---
 
-## 21️⃣ How does Linux identify processes?
-Each process has:
-- **PID** → process ID  
-- **PPID** → parent process ID  
-- **TGID** → thread group ID (for multi-threaded processes)
+### Types of Threads
+
+**Q3. User-level vs Kernel-level threads?**
+- User-level: Managed by libraries
+- Kernel-level: Managed by OS
+
+**Linux API:** `pthread_create()`
 
 ---
 
-## 22️⃣ What is a process hierarchy?
-All processes form a **tree structure**, starting from **init (PID 1)**.  
-Each process has exactly one parent and may have multiple children.
+## 7. CPU Scheduling – Interview Questions and Answers
+
+### Scheduling Algorithms
+
+**Q1. What is CPU Scheduling?**  
+Selecting a process for CPU execution.
+
+**Algorithms:**
+- FCFS
+- SJF
+- Priority
+- Round Robin
+- Multilevel Queue
 
 ---
 
-## 23️⃣ What is the purpose of chroot()?
-`chroot()` changes the root directory (`/`) for the current process — creating a sandbox or isolated environment.
+### Scheduling Metrics
+
+**Q2. Scheduling metrics?**
+- Turnaround Time
+- Waiting Time
+- Response Time
 
 ---
 
-## 24️⃣ What is setuid() and setgid() used for?
-Used to **change user or group ID** of a process to gain or drop privileges safely.  
-📘 Example: `passwd` uses setuid() to run as root even for normal users.
+## 8. Memory Management – Interview Questions and Answers
+
+### Memory Basics
+
+**Q1. Logical vs Physical Memory?**
+- Logical: CPU-generated
+- Physical: Actual RAM
 
 ---
 
-## 25️⃣ How do you create and run a daemon manually?
-Steps:
-1. `fork()` → parent exits  
-2. `setsid()` → become session leader  
-3. `chdir("/")` → detach from any directory  
-4. `umask(0)` → reset permissions  
-5. Close stdin, stdout, stderr  
+### Virtual Memory
+
+**Q2. What is Virtual Memory?**  
+Using disk to extend RAM.
 
 ---
 
-## 26️⃣ What is the ps command used for?
-Lists process details such as **PID, state, CPU usage, memory usage**.
+### Paging and Segmentation
+
+**Q3. What is Paging?**  
+Fixed-size memory blocks.
+
+**Q4. What is Segmentation?**  
+Logical memory division.
 
 ---
 
-## 27️⃣ What is top and htop used for?
-Displays **real-time process information** and **CPU/memory utilization**.
+### Page Replacement
+
+**Q5. Page replacement algorithms?**
+- FIFO
+- LRU
 
 ---
 
-## 28️⃣ What is the difference between user time and system time?
-- **User time** → executing user-level code  
-- **System time** → executing kernel-level code on behalf of the process  
+### Linux Memory APIs
+
+**Q6. Stack vs Heap?**
+- Stack: Function calls
+- Heap: Dynamic allocation
 
 ---
 
-## 29️⃣ What is a signal in process management?
-A software interrupt used to notify a process about an event (e.g., `SIGINT`, `SIGKILL`, `SIGSTOP`).
+## 9. Deadlocks – Interview Questions and Answers
+
+### Deadlock Basics
+
+**Q1. What is Deadlock?**  
+Processes waiting indefinitely for resources.
 
 ---
 
-## 30️⃣ How does kill work?
-`kill(pid, sig)` sends a signal to a process.  
-Example:
-```bash
-kill -9 <PID>   # sends SIGKILL
-````
+### Necessary Conditions
+
+**Q2. Deadlock conditions?**
+1. Mutual exclusion
+2. Hold and wait
+3. No preemption
+4. Circular wait
 
 ---
 
-## 31️⃣ What is a signal handler?
+### Handling Deadlocks
 
-A function registered with `signal()` or `sigaction()` to define custom behavior when a signal arrives.
-
----
-
-## 32️⃣ What is process priority vs nice value?
-
-* **Priority** → kernel-internal value
-* **Nice value** → user-visible adjustment
-  Lower nice → higher priority.
+**Q3. Deadlock handling methods?**
+- Prevention
+- Avoidance (Banker’s Algorithm)
+- Detection and recovery
 
 ---
 
-## 33️⃣ What is ps -ef vs ps aux difference?
+## 10. Synchronization – Interview Questions and Answers
 
-| Command  | Style          | Description                           |
-| :------- | :------------- | :------------------------------------ |
-| `ps -ef` | System V style | Traditional UNIX format               |
-| `ps aux` | BSD style      | Displays memory and CPU in BSD format |
+### Synchronization Basics
 
----
+**Q1. What is a Critical Section?**  
+Code accessing shared data.
 
-## 34️⃣ What is interleaving in processes?
-
-When CPU time is shared among processes so they appear to run simultaneously (on a single-core system).
+**Q2. What is a Race Condition?**  
+Output depends on execution order.
 
 ---
 
-## 35️⃣ What is preemption?
+### Synchronization Tools
 
-When the scheduler forcibly suspends a process so another can run — foundation of **multitasking**.
+**Q3. What is a Mutex?**  
+Binary lock for mutual exclusion.
 
----
+**Q4. What is a Semaphore?**  
+Counter-based synchronization.
 
-## 36️⃣ What is time slicing?
-
-Allocating a small **CPU quantum** (e.g., 10ms) to each runnable process cyclically.
-
----
-
-## 37️⃣ What is the difference between kernel threads and user processes?
-
-* **Kernel threads** → run entirely in kernel mode (background tasks like flushing buffers).
-* **User processes** → execute user code and enter kernel mode via syscalls.
+**Q5. Spinlock vs Mutex?**
+- Spinlock: Busy waiting
+- Mutex: Blocking
 
 ---
 
-## 38️⃣ What is /proc/[pid]/?
+## 11. File System – Interview Questions and Answers
 
-A **virtual directory** exposing process details like memory maps, cmdline, open files, etc.
+### File Basics
 
----
-
-## 39️⃣ What is the difference between kill, killall, and pkill?
-
-| Command   | Target  | Description                    |
-| :-------- | :------ | :----------------------------- |
-| `kill`    | PID     | Send signal by process ID      |
-| `killall` | Name    | Send signal by process name    |
-| `pkill`   | Pattern | Match by name or regex pattern |
+**Q1. What is a File?**  
+Collection of related data on disk.
 
 ---
 
-## 40️⃣ What is a job in Linux?
+### Inode
 
-A **job** is a process started by a shell, often in the background (`&`).
-Managed using **job control** commands:
-
-```bash
-jobs
-fg %1
-bg %2
-```
+**Q2. What is an Inode?**  
+Stores file metadata.
 
 ---
 
-✅ **Summary**
+### Linux File APIs
 
-* Process = running program instance
-* PCB = metadata for each process
-* fork(), exec(), wait(), clone() = process creation mechanisms
-* Scheduler = CPU time allocator
-* Signals = event communication mechanism
-* Tools: `ps`, `top`, `kill`, `/proc/[pid]/`
+**Q3. File system calls?**
+- `open()`
+- `read()`
+- `write()`
+- `lseek()`
 
-```
+**Q4. What is a File Descriptor?**  
+Integer representing an open file.
 
+---
 
+## 12. I/O Management – Interview Questions and Answers
 
+### I/O Basics
+
+**Q1. Blocking vs Non-blocking I/O?**
+- Blocking: Waits
+- Non-blocking: Returns immediately
+
+---
+
+### Linux Concept
+
+**Q2. What does “Everything is a file” mean?**  
+Devices and IPC are treated as files.
+
+---
+
+## 13. Inter-Process Communication (IPC)
+
+**Q1. What is IPC?**  
+Communication between processes.
+
+**Types:**
+- Pipes
+- FIFOs
+- Message Queues
+- Shared Memory
+- Signals
+- Sockets
+
+---
+
+## 14. System Calls – Interview Questions and Answers
+
+### Basics
+
+**Q1. What is a System Call?**  
+Interface to request kernel services.
+
+---
+
+### Execution Modes
+
+**Q2. User mode vs Kernel mode?**
+- User: Restricted
+- Kernel: Full access
+
+---
+
+### Examples
+
+**Q3. System call examples?**
+- `read()`
+- `write()`
+- `fork()`
+
+---
+
+## 15. Virtualization and Containers
+
+**Q1. What is Virtualization?**  
+Running multiple OS on same hardware.
+
+**Q2. What are Containers?**  
+Process-level isolation using namespaces and cgroups.
+
+---
+
+## 16. OS Architecture Types
+
+| Type | Description |
+|---|---|
+| Monolithic | All services in kernel (Linux) |
+| Microkernel | Minimal kernel (QNX) |
+| Hybrid | Combination (Windows, macOS) |
+
+---
+
+## 17. OS Concepts vs Linux APIs
+
+| OS Concept | Linux API |
+|---|---|
+| Process | fork(), exec(), wait() |
+| Thread | pthread |
+| Memory | malloc(), mmap() |
+| File System | open(), read(), write() |
+| IPC | pipe(), shm, socket |
+| Synchronization | mutex, semaphore |
+
+---
