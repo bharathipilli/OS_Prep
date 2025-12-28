@@ -409,3 +409,230 @@ Process-level isolation using namespaces and cgroups.
 | Synchronization | mutex, semaphore |
 
 ---
+# Operating Systems – Interview Questions and Answers
+
+---
+
+## 1. What do you mean by Process Synchronization?
+
+### Answer
+Process synchronization is a mechanism used to **coordinate multiple processes or threads that share common resources or data**, ensuring that they execute in a **proper and controlled sequence**.
+
+The main objective of process synchronization is to:
+- Maintain **data consistency**
+- Prevent **race conditions**
+- Ensure **mutual exclusion** while accessing shared resources
+
+---
+
+### Why is Process Synchronization Required?
+
+- Multiple processes may access shared data simultaneously
+- This can lead to inconsistent or incorrect results
+- Synchronization ensures orderly execution of cooperating processes
+
+---
+
+### Types of Processes in Synchronization
+
+#### Independent Process
+- Does not share data with other processes
+- Execution is independent
+- Does not require synchronization
+
+#### Cooperative Process
+- Shares data or resources with other processes
+- Execution affects other processes
+- Requires synchronization mechanisms
+
+---
+
+## 2. Why is the Operating System Important?
+
+### Answer
+The Operating System (OS) is the **most essential and vital component** of a computer system. Without an OS, a computer is considered **useless**.
+
+---
+
+### Importance of Operating System
+
+- Acts as an **interface between users and hardware**
+- Enables communication between **software and hardware**
+- Manages CPU, memory, storage, and I/O devices
+- Maintains balance between hardware and CPU
+- Provides a **platform for programs to run**
+- Performs common services required by applications
+
+---
+
+## 3. Difference Between Main Memory and Secondary Memory
+
+### Main Memory (Primary Memory)
+
+- Usually RAM (Random Access Memory)
+- Also called internal or read-write memory
+- Stores data and programs currently required by the CPU
+- Fast and directly accessible by the CPU
+
+---
+
+### Secondary Memory
+
+- Used for long-term data storage
+- Also called external or auxiliary memory
+- Stores large volumes of data
+- Examples: Hard disk, SSD, USB, CD/DVD
+
+---
+
+### Comparison Table
+
+| Primary Memory | Secondary Memory |
+|---|---|
+| Directly accessed by CPU | Accessed via I/O operations |
+| Can be volatile | Non-volatile |
+| More expensive | Less expensive |
+| Temporary storage | Permanent storage |
+| Data lost on power failure | Data retained on power failure |
+| Faster | Slower |
+| Stores currently used data | Stores all data |
+
+---
+
+## 4. What do you mean by Overlays in OS?
+
+### Answer
+Overlays are a **memory management technique** in which a program is divided into **smaller parts**, and only the **required part** is loaded into memory at a time.
+
+---
+
+### Why are Overlays Used?
+
+- To run programs larger than physical memory
+- Saves memory space
+- Only necessary instructions and data are kept in memory
+- Does not require operating system support
+- Mostly used in systems with limited memory
+
+---
+
+## 5. Write Top 10 Examples of Operating Systems
+
+### Answer
+
+- MS Windows
+- Ubuntu
+- macOS
+- Fedora
+- Solaris
+- FreeBSD
+- Chrome OS
+- CentOS
+- Debian
+- Android
+
+---
+
+# Advanced OS Interview Questions
+
+---
+
+## 6. What are the Different Types of Kernel?
+
+### Answer
+The main types of kernels are:
+
+- Monolithic Kernel
+- Microkernel
+- Hybrid Kernel
+- Nano Kernel
+- Exokernel
+
+---
+
+## 7. What do you mean by Semaphore in OS? Why is it used?
+
+### Answer
+A **Semaphore** is a synchronization mechanism used to **control access to shared resources** in multi-process or multi-threaded systems.
+
+It uses two atomic operations:
+- `wait()` (P)
+- `signal()` (V)
+
+Semaphores help prevent **race conditions** and ensure safe resource sharing.
+
+---
+
+### Types of Semaphores
+
+#### Binary Semaphore
+- Values: 0 or 1
+- Used for mutual exclusion
+- Controls access to a single resource
+
+#### Counting Semaphore
+- Value greater than 1
+- Used to manage multiple identical resources
+
+---
+
+### Binary Semaphore vs Mutex
+
+| Binary Semaphore | Mutex |
+|---|---|
+| Based on signaling | Based on locking |
+| Integer variable (0 or 1) | Lock object |
+| No ownership | Ownership enforced |
+| Can be used by multiple processes | Used by threads |
+| Faster in some cases | Slower under heavy contention |
+
+---
+
+## 8. What is Kernel? Write its Main Functions
+
+### Answer
+The **Kernel** is the **core component** of an operating system. It is loaded into memory at system startup and remains active throughout system operation.
+
+It acts as an **interface between user applications and hardware**.
+
+---
+
+### Functions of Kernel
+
+- Manages CPU, memory, files, and processes
+- Facilitates communication between hardware and software
+- Manages RAM efficiently
+- Controls access to peripherals
+- Schedules CPU tasks for optimal performance
+
+---
+
+## 9. Difference Between Microkernel and Monolithic Kernel
+
+### Microkernel
+- Contains only essential OS services
+- Other services run in user space
+- Smaller and more reliable
+- Example: QNX
+
+---
+
+### Monolithic Kernel
+- All OS services run in kernel space
+- Faster but less fault-tolerant
+- Larger kernel size
+- Example: Linux
+
+---
+
+### Comparison Table
+
+| Microkernel | Monolithic Kernel |
+|---|---|
+| Services in separate address spaces | Services in same address space |
+| Smaller kernel size | Larger kernel size |
+| Better fault isolation | System crash on failure |
+| Uses message passing | Uses system calls |
+| Easier to extend | Harder to extend |
+
+---
